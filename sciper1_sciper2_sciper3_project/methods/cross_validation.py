@@ -5,7 +5,7 @@ def splitting_fn(data, labels, indices, fold_size, fold):
     """
         Function to split the data into training and validation folds.
         Arguments:
-            data (np.array, of shape (N, D)): data (which will be split to training 
+            data (np.array, of shape (N, D)): data (which will be split to training
                 and validation data during cross validation),
             labels  (np.array, of shape (N,)): the labels of the data
             indices: (np.array, of shape (N,)): array of pre shuffled indices (integers ranging from 0 to N)
@@ -14,10 +14,10 @@ def splitting_fn(data, labels, indices, fold_size, fold):
         Returns:
             train_data, train_label, val_data, val_label (np. arrays): split training and validation sets
     """
-                
+
     ##
     ###
-    #### YOUR CODE HERE! 
+    #### YOUR CODE HERE!
     ###
     ##
 
@@ -34,7 +34,7 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
             search_arg_vals (list): the different argument values to try, in a list.
                 example: for the "DummyClassifier", the search_arg_name is "dummy_arg"
                 and the values we try could be [1,2,3]
-            data (np.array, of shape (N, D)): data (which will be split to training 
+            data (np.array, of shape (N, D)): data (which will be split to training
                 and validation data during cross validation),
             labels  (np.array, of shape (N,)): the labels of the data
             k_fold (int): number of folds
@@ -55,37 +55,33 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
     acc_list1 = []
     for arg in search_arg_vals:
         arg_dict = {search_arg_name: arg}
-        # this is just a way of giving an argument 
+        # this is just a way of giving an argument
         # (example: for DummyClassifier, this is "dummy_arg":1)
         method_obj.set_arguments(**arg_dict)
 
         acc_list2 = []
         for fold in range(k_fold):
-            
-                    
+            pass
+
+
             ##
             ###
-            #### YOUR CODE HERE! 
+            #### YOUR CODE HERE!
             ###
             ##
-        
-         
+
+
         ##
         ###
-        #### YOUR CODE HERE! 
+        #### YOUR CODE HERE!
         ###
         ##
-     
+
     ##
     ###
-    #### YOUR CODE HERE! 
+    #### YOUR CODE HERE!
     ###
     ##
 
 
     return best_hyperparam, best_acc
-
-        
-
-
-    
