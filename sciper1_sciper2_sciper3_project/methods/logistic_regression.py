@@ -2,6 +2,7 @@ import numpy as np
 import sys
 sys.path.append('..')
 from utils import label_to_onehot
+from utils import onehot_to_label
 
 
 class LogisticRegression(object):
@@ -11,7 +12,7 @@ class LogisticRegression(object):
         But make sure that __init__, set_arguments, fit and predict work correctly.
     """
 
-        def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
             Initialize the task_kind (see dummy_methods.py)
             and call set_arguments function of this class.
@@ -147,8 +148,7 @@ class LogisticRegression(object):
 
 
 
-        def logistic_regression_train_multi(data, labels, k=3, max_iters=10, lr=0.001,
-                                            print_period=5, plot_period=5):
+        def logistic_regression_train_multi(self,data, labels, k=4,print_period=5, plot_period=5):
             """ Classification function for multi class logistic regression.
 
             Args:
@@ -166,40 +166,36 @@ class LogisticRegression(object):
                 np. array: Label assignments of data of shape (N, ).
             """
             weights = np.random.normal(0, 0.1, [data.shape[1], k])
-            for it in range(max_iters):
+            for it in range(self.max_iters):
                 # YOUR CODE HERE
                 gradient = gradient_logistic_multi(data, labels, weights)
-                weights = weights - lr * gradient
+                weights = weights - self.lr * gradient
                 ##################################
                 predictions = logistic_regression_classify_multi(data, weights)
-                if accuracy_fn(helpers.onehot_to_label(labels), predictions) == 1:
+                if accuracy_fn(onehot_to_label(labels), predictions) == 1:
                     break
                 # logging and plotting
                 if print_period and it % print_period == 0:
                     print('loss at iteration', it, ":", loss_logistic_multi(data, labels, weights))
-                if plot_period and it % plot_period == 0:
-                    fig = helpers.visualize_predictions(data=data, labels_gt=helpers.onehot_to_label(labels),
-                                                        labels_pred=predictions, title="iteration " + str(it))
-            fig = helpers.visualize_predictions(data=data, labels_gt=helpers.onehot_to_label(labels),
-                                                labels_pred=predictions, title="final model")
+               
             return weights
 
-        # In[113]:
 
-        weights_multi = logistic_regression_train_multi(training_data, training_labels, max_iters=20, lr=1e-3, print_period=5,
+        self.weights_multi = logistic_regression_train_multi(training_data, training_labels, print_period=5,
                                                         plot_period=5)
 
 
 
         predictions_multi = logistic_regression_classify_multi(data_test, weights_multi)
-        fig = helpers.visualize_predictions(data=data_test, labels_gt=helpers.onehot_to_label(labels_test),
-                                            labels_pred=predictions_multi, title="test result")
-        print("Accuracy is", accuracy_fn(helpers.onehot_to_label(labels_test), predictions_multi))
+        print("Accuracy is", accuracy_fn(onehot_to_label(labels_test), predictions_multi))
 
 
-        self.D, self.C = training_data.shape[1], int(np.max(training_labels) + 1)
+        
         pred_labels = predictions_multi
-    
+
+
+        return pred_labels
+
     def predict(self, test_data):
         """
             Runs prediction on the test data.
@@ -213,6 +209,21 @@ class LogisticRegression(object):
         ###
         #### YOUR CODE HERE! 
         ###
-        ##
+        def logistic_regression_classify_multi(data, w):
+            """ Classification function for multi class logistic regression.
 
-        return pred_labels
+            Args:
+                data (np.array): Dataset of shape (N, D).
+                w (np.array): Weights of logistic regression model of shape (D, C)
+            Returns:
+                np. array: Label assignments of data of shape (N, ).
+            """
+            #### write your code here: find predictions, argmax to find the correct label
+            # We've left this part for you to code for your projects.
+            predictions = np.argmax(f_softmax(data, w), axis=1)
+
+            return predictions
+        
+        
+        pred_labels2 = logistic_regression_classify_multi(test_data, weights_multi)
+        return pred_labels2
