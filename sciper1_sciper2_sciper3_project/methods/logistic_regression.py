@@ -209,6 +209,30 @@ class LogisticRegression(object):
         ###
         #### YOUR CODE HERE! 
         ###
+        """
+        DEFINIR SOFTMAX ET LOGISTIC CLASS MULTI EN DEHORS DE PREDICT ET FIT???
+        """
+        def f_softmax(data, w):
+            """ Softmax function
+            Args:
+                data (np.array): Input data of shape (N, D)
+                w (np.array): Weights of shape (D, C) where C is # of classes
+            Returns:
+                res (np.array): Probabilites of shape (N, C), where each value is in
+                    range [0, 1] and each row sums to 1.
+            """
+            N = data.shape[0]
+            C = w.shape[1]
+
+            s_exp = np.exp(data @ w)
+            s_exp_sum = np.sum(s_exp, axis=1)
+
+            res = np.zeros((data.shape[0], w.shape[1]))
+            for i in range(0, N):
+                res[i] = s_exp[i] / s_exp_sum[i]
+            # We've left this part for you to code for your projects.
+            return res
+
         def logistic_regression_classify_multi(data, w):
             """ Classification function for multi class logistic regression.
 
