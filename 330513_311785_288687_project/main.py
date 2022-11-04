@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 import argparse
 
 # these will be imported in MS2. uncomment then!
@@ -28,7 +28,7 @@ def main(args):
         test_dataset = FMA_Dataset(split="test", path_to_data=args.path_to_data, means=train_dataset.means, stds=train_dataset.stds)
         #uncomment for MS2
         #val_dataset = FMA_Dataset(split="val",path_to_data=args.path_to_data, means=train_dataset.means, stds=train_dataset.stds)
-        
+
     elif args.dataset=="movies":
         train_dataset = Movie_Dataset(split="train", path_to_data=args.path_to_data)
         test_dataset = Movie_Dataset(split="test", path_to_data=args.path_to_data, means=train_dataset.means, stds=train_dataset.stds)
@@ -61,14 +61,14 @@ def main(args):
 
         # create model
         model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes, regression_output_size=train_dataset.regression_target_size)
-        
+
         # training loop
         trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
         trainer.train_all(train_dataloader, val_dataloader)
         results_class, results_reg = trainer.eval(test_dataloader)
         torch.save(results_class, "results_class.txt")
         torch.save(results_reg, "results_reg.txt")
-    
+
     # classical ML methods (MS1 and MS2)
     # we first create the classification/regression objects
     # search_arg_vals and search_arg_name are defined for cross validation
@@ -78,18 +78,18 @@ def main(args):
         if args.method_name == "dummy_classifier":
             method_obj =  DummyClassifier()
             search_arg_vals = [1,2,3]
-            search_arg_name = "dummy_arg"        
+            search_arg_name = "dummy_arg"
         elif args.method_name == 'dummy_regressor':
             method_obj = DummyRegressor()
-            search_arg_vals = [1,2,3] 
-            train_labels = train_regression_target   
-            search_arg_name = "dummy_arg"        
-        
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+            search_arg_vals = [1,2,3]
+            train_labels = train_regression_target
+            search_arg_name = "dummy_arg"
+
+            ##
+            ###
+            #### YOUR CODE HERE!
+            ###
+            ##
 
         # cross validation (MS1)
         if args.use_cross_validation:
@@ -110,8 +110,8 @@ def main(args):
             print("Final classification accuracy is", acc)
             macrof1 = macrof1_fn(pred_labels,test_labels)
             print("Final macro F1 score is", macrof1)
-            
-        
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()

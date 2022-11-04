@@ -1,3 +1,5 @@
+
+#!/usr/local/bin/python3
 import os
 import ast
 
@@ -6,6 +8,8 @@ import numpy as np
 from torch.utils.data import Dataset
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler, LabelEncoder
+
+
 
 
 from utils import normalize_fn
