@@ -39,7 +39,7 @@ def main(args):
     # Note: We only use the following methods for more old-school methods, not the nn!
     train_data, train_regression_target, train_labels = train_dataset.data, train_dataset.regression_target, train_dataset.labels
     test_data, test_regression_target, test_labels = test_dataset.data, test_dataset.regression_target, test_dataset.labels
-
+    print(train_regression_target.shape)
     print("Dataloading is complete!")
 
     # Dimensionality reduction (MS2)
@@ -86,8 +86,22 @@ def main(args):
             train_labels = train_regression_target
             search_arg_name = "dummy_arg"
         elif args.method_name == "linear_regression":
-            print(train_data.shape)
             method_obj = LinearRegression(lmda=args.ridge_regression_lmda)
+
+            """
+            # defining bias term training data
+            ones_column = np.ones(train_data.shape[0]).reshape(train_data.shape[0],-1)
+            train_data = np.concatenate((ones_column, train_data), axis=1)
+
+            # defining bias term testing data
+            ones_column = np.ones(test_data.shape[0]).reshape(test_data.shape[0],-1)
+            test_data = np.concatenate((ones_column, test_data), axis=1)
+            """
+
+            # getting the targets instead of all the labels
+            train_labels = train_regression_target
+
+            # for cross validation
             search_arg_vals = [0,1,2]
             search_arg_name = "lmda"
 
@@ -109,7 +123,6 @@ def main(args):
         # FIT AND PREDICT:
         method_obj.fit(train_data, train_labels)
         pred_labels = method_obj.predict(test_data)
-        # print(utils.onehot_to_label(test_regression_target).shape)
         # Report test results
         if method_obj.task_kind == 'regression':
             loss = mse_fn(pred_labels,test_regression_target)
@@ -129,7 +142,7 @@ if __name__ == '__main__':
     parser.add_argument('--method_name', default="knn", type=str, help="knn / logistic_regression / nn")
     parser.add_argument('--knn_neighbours', default=3, type=int, help="number of knn neighbours")
     parser.add_argument('--lr', type=float, default=1e-5, help="learning rate for methods with learning rate")
-    parser.add_argument('--ridge_regression_lmda', type=float, default=1, help="lambda for ridge regression")
+    parser.add_argument('--ridge_regression_lmda', type=float, default=0, help="lambda for ridge regression")
     parser.add_argument('--max_iters', type=int, default=1000, help="max iters for methods which are iterative")
     parser.add_argument('--use_cross_validation', action="store_true", help="to enable cross validation")
 

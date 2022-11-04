@@ -42,6 +42,6 @@ def mse_fn(pred,gt):
 
     '''
 
-    loss = (gt-pred)**2
+    loss = (pred-gt)**2
     loss = np.mean(loss)
     return loss
