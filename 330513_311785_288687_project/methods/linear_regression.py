@@ -46,7 +46,7 @@ class LinearRegression(object):
             self.lmda = args[0]
         # if there were no args or kwargs passed, we set the lmda to 0 (default value).
         else:
-            self.lmda = 0
+            self.lmda = 1
 
 
     def fit(self, training_data, training_labels):
@@ -66,8 +66,9 @@ class LinearRegression(object):
         ##
         ones_column = np.ones(training_data.shape[0]).reshape(training_data.shape[0],-1)
         X_bias = np.concatenate((training_data, ones_column), axis=1)
-        self.w = np.linalg.pinv(training_data)@training_labels
-        return
+        Identity = np.identity(X_bias.shape[1])
+        self.w = np.linalg.inv((X_bias.T@X_bias) + self.lmda*Identity)@X_bias.T@training_labels
+        return X_bias@self.w
 
 
 
@@ -86,3 +87,6 @@ class LinearRegression(object):
         #### YOUR CODE HERE!
         ###
         ##
+        ones_column = np.ones(test_data.shape[0]).reshape(test_data.shape[0],-1)
+        X_test_bias = np.concatenate((test_data, ones_column), axis=1)
+        return X_test_bias@self.w

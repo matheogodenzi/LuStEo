@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 
 def accuracy_fn(pred_labels, gt_labels):
     '''
@@ -19,7 +19,7 @@ def macrof1_fn(pred_labels,gt_labels):
     for val in class_ids:
         predpos = (pred_labels == val)
         gtpos = (gt_labels==val)
-        
+
         tp = sum(predpos*gtpos)
         fp = sum(predpos*~gtpos)
         fn = sum(~predpos*gtpos)
@@ -42,8 +42,6 @@ def mse_fn(pred,gt):
 
     '''
 
-    loss = (pred-gt)**2
+    loss = (gt-pred)**2
     loss = np.mean(loss)
     return loss
-
-
