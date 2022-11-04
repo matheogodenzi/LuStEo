@@ -3,7 +3,7 @@ import sys
 
 class LinearRegression(object):
     """
-        Linear regressor object. 
+        Linear regressor object.
         Note: This class will implement BOTH linear regression and ridge regression.
         Recall that linear regression is just ridge regression with lambda=0.
         Feel free to add more functions to this class if you need.
@@ -17,9 +17,12 @@ class LinearRegression(object):
         """
         ##
         ###
-        #### YOUR CODE HERE! 
+        #### YOUR CODE HERE!
         ###
         ##
+        self.task_kind = "regression"
+        self.set_arguments(*args, **kwargs)
+
 
     def set_arguments(self, *args, **kwargs):
         """
@@ -31,10 +34,20 @@ class LinearRegression(object):
 
         ##
         ###
-        #### YOUR CODE HERE! 
+        #### YOUR CODE HERE!
         ###
         ##
-    
+
+        # first checks if "lmda" was passed as a kwarg.
+        if "lmda" in kwargs:
+            self.lmda = kwargs["lmda"]
+        # if not, then check if args is a list with size bigger than 0.
+        elif len(args) > 0 :
+            self.lmda = args[0]
+        # if there were no args or kwargs passed, we set the lmda to 0 (default value).
+        else:
+            self.lmda = 0
+
 
     def fit(self, training_data, training_labels):
         """
@@ -45,29 +58,31 @@ class LinearRegression(object):
             Returns:
                 pred_regression_targets (np.array): predicted target of shape (N,regression_target_size)
         """
-        
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
 
-        return pred_regression_targets
+        ##
+        ###
+        #### YOUR CODE HERE!
+        ###
+        ##
+        ones_column = np.ones(training_data.shape[0]).reshape(training_data.shape[0],-1)
+        X_bias = np.concatenate((training_data, ones_column), axis=1)
+        self.w = np.linalg.pinv(training_data)@training_labels
+        return
+
+
 
     def predict(self, test_data):
         """
             Runs prediction on the test data.
-            
+
             Arguments:
                 test_data (np.array): test data of shape (N,D)
             Returns:
                 pred_regression_targets (np.array): predicted targets of shape (N,regression_target_size)
-        """   
+        """
 
         ##
         ###
-        #### YOUR CODE HERE! 
+        #### YOUR CODE HERE!
         ###
         ##
-
-        return pred_regression_targets
