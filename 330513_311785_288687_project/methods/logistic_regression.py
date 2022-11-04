@@ -42,6 +42,8 @@ class LogisticRegression(object):
         elif len(args) > 0:
             self.max_iters = args[5]
             self.lr = args[7]
+            print(self.max_iters)
+            print(self.lr)
 
         ##
         ###
