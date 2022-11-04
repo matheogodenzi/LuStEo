@@ -66,7 +66,7 @@ class H36M_Dataset(Dataset):
 
         self.data = data
         self.regression_target = regression_target
-        self.labels = labels 
+        self.labels = labels
 
         self.regression_target_size = regression_target.shape[1]
         self.feature_dim = data.shape[1]
@@ -91,7 +91,7 @@ class FMA_Dataset(Dataset):
         '''
         Load data, split into train and validation
         '''
-        
+
         if self.split == "train":
             all_data = np.load(self.path_to_data+"/fma_data/fma_train_data.npy")
             all_labels = np.load(self.path_to_data+"/fma_data/fma_train_labels.npy")
@@ -103,12 +103,12 @@ class FMA_Dataset(Dataset):
         if self.split == "test" or self.split == "test1":
             all_data = np.load(self.path_to_data+"/fma_data/fma_test1_data.npy")
             all_labels = np.load(self.path_to_data+"/fma_data/fma_test1_labels.npy")
-        
+
         # for deep learning (MS2)
         if self.split == "test2":
             all_data = np.load(self.path_to_data+"/fma_data/fma_test2_data.npy")
             all_labels = np.zeros([all_data.shape[0], 2])
-        
+
         if normalize_inputs:
             if self.split == "train":
                 self.means = all_data.mean(axis=0, keepdims=True)
@@ -117,16 +117,16 @@ class FMA_Dataset(Dataset):
                 self.means = means
                 self.stds = stds
             all_data = normalize_fn(all_data, self.means, self.stds)
-            
+
         data = all_data
         regression_target = all_labels[...,0]
         labels = all_labels[...,1]
-        
+
         if normalize_outputs:
             reg_means = regression_target.mean(axis=0, keepdims=True)
             reg_stds  = regression_target.std(axis=0, keepdims=True)
             regression_target = normalize_fn(regression_target, reg_means, reg_stds)
-        
+
         return data.astype('float32'), regression_target.astype('float32'), labels.astype('int64')
 
     def __len__(self):
@@ -183,7 +183,7 @@ class Movie_Dataset(Dataset):
 
         self.data = data
         self.labels = labels[...,1].astype(int)
-        self.regression_target = labels[...,0] 
+        self.regression_target = labels[...,0]
 
         self.regression_target = normalize_fn(self.regression_target, self.regression_target.mean(), self.regression_target.std())
 
@@ -191,4 +191,4 @@ class Movie_Dataset(Dataset):
         return self.data[idx], self.regression_target[idx], self.labels[idx]
 
     def __len__(self):
-        return self.data.shape[0]    
+        return self.data.shape[0]
