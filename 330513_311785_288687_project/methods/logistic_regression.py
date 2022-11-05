@@ -128,7 +128,7 @@ class LogisticRegression(object):
                 break
 
         return pred_labels
-
+        
     def predict(self, test_data):
         """
             Runs prediction on the test data.
