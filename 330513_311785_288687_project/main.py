@@ -39,7 +39,7 @@ def main(args):
     # Note: We only use the following methods for more old-school methods, not the nn!
     train_data, train_regression_target, train_labels = train_dataset.data, train_dataset.regression_target, train_dataset.labels
     test_data, test_regression_target, test_labels = test_dataset.data, test_dataset.regression_target, test_dataset.labels
-    print(train_regression_target.shape)
+    print(train_labels)
     print("Dataloading is complete!")
 
     # Dimensionality reduction (MS2)
@@ -76,15 +76,18 @@ def main(args):
     # we show how to create the objects for DummyClassifier and DummyRegressor
     # the rest of the methods are up to you!
     else:
+
         if args.method_name == "dummy_classifier":
             method_obj =  DummyClassifier()
             search_arg_vals = [1,2,3]
             search_arg_name = "dummy_arg"
+
         elif args.method_name == 'dummy_regressor':
             method_obj = DummyRegressor()
             search_arg_vals = [1,2,3]
             train_labels = train_regression_target
             search_arg_name = "dummy_arg"
+
         elif args.method_name == "linear_regression":
             method_obj = LinearRegression(lmda=args.ridge_regression_lmda)
 
@@ -102,6 +105,11 @@ def main(args):
             train_labels = train_regression_target
 
             # for cross validation
+            search_arg_vals = [0,1,2]
+            search_arg_name = "lmda"
+
+        elif args.method_name == "logistic_regression":
+            method_obj = LogisticRegression(max_iters=args.max_iters, lr=args.lr)
             search_arg_vals = [0,1,2]
             search_arg_name = "lmda"
 

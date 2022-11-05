@@ -3,6 +3,7 @@ import sys
 sys.path.append('..')
 from utils import label_to_onehot
 from utils import onehot_to_label
+from metrics import accuracy_fn
 
 
 class LogisticRegression(object):
@@ -17,10 +18,10 @@ class LogisticRegression(object):
             Initialize the task_kind (see dummy_methods.py)
             and call set_arguments function of this class.
         """
-        
+
         ##
         ###
-        #### YOUR CODE HERE! 
+        #### YOUR CODE HERE!
         ###
         ##
         self.task_kind = 'classification'
@@ -37,20 +38,73 @@ class LogisticRegression(object):
         if "max_iters" in kwargs:
             self.max_iters = kwargs["max_iters"]
         # if not, then check if args is a list with size bigger than 0.
-        elif "lr" in kwargs:
-            self.lr = kwargs["lr"]
         elif len(args) > 0:
-            self.max_iters = args[5]
-            self.lr = args[7]
-            print(self.max_iters)
-            print(self.lr)
+            self.max_iters = args[0]
+        else:
+            self.max_iters = 10
 
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
-       
+        if "lr" in kwargs:
+            self.lr = kwargs["lr"]
+        elif len(args) > 1:
+            self.lr = args[1]
+        else:
+            self.lr = 0.1
+
+    def f_softmax(self, training_data, w):
+        """ Softmax function
+
+        Args:
+            data (np.array): Input data of shape (N, D)
+            w (np.array): Weights of shape (D, C) where C is # of classes
+
+        Returns:
+            res (np.array): Probabilites of shape (N, C), where each value is in
+                range [0, 1] and each row sums to 1.
+        """
+        f_softmax = np.zeros((training_data.shape[0], w.shape[1]))
+
+        for i in range(training_data.shape[0]):
+            norm_fact = np.sum(np.exp(w.T@training_data[i,:]))
+            for j in range(w.shape[1]):
+                f_softmax[i,j] = np.exp(w.T[j, :]@training_data[i,:])/norm_fact
+
+        '''
+        a = round(np.sum(f_softmax[i, :]),2)
+        print(a)
+        '''
+        res = f_softmax
+        return res
+
+    def gradient_logistic_multi(self, training_data, training_labels, w):
+        """ Gradient function for multi class logistic regression
+
+        Args:
+            data (np.array): Input data of shape (N, D)
+            labels (np.array): Labels of shape  (N, C)  (in one-hot representation)
+            w (np.array): Weights of shape (D, C)
+
+        Returns:
+            grad_w (np.array): Gradients of shape (D, C)
+        """
+        # print("f_soft :", self.f_softmax(training_data, w).shape)
+        # print("training_labels",training_labels.shape)
+        grad_w = training_data.T@(self.f_softmax(training_data, w)-label_to_onehot(training_labels))
+
+        return grad_w
+
+    def logistic_regression_classify_multi(self, training_data, w):
+        """ Classification function for multi class logistic regression.
+
+        Args:
+            data (np.array): Dataset of shape (N, D).
+            w (np.array): Weights of logistic regression model of shape (D, C)
+        Returns:
+            predictions (np.array): Label assignments of data of shape (N, ) (NOT one-hot!).
+        """
+        # YOUR CODE HERE: find predictions, argmax to find the correct label
+        y_hat = self.f_softmax(training_data, w)
+        predictions = np.argmax(y_hat, 1)
+        return predictions
 
     def fit(self, training_data, training_labels):
         """
@@ -61,195 +115,30 @@ class LogisticRegression(object):
             Returns:
                 pred_labels (np.array): target of shape (N,)
         """
-        
-        
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
-        def f_softmax(data, w):
-            """ Softmax function
 
-            Args:
-                data (np.array): Input data of shape (N, D)
-                w (np.array): Weights of shape (D, C) where C is # of classes
+        print("fitting the model...")
+        self.w = np.random.normal(0, 0.1, [training_data.shape[1], 4])
+        for it in range(self.max_iters):
+            self.w = self.w - self.lr*self.gradient_logistic_multi(training_data, training_labels, self.w)
 
-            Returns:
-                res (np.array): Probabilites of shape (N, C), where each value is in
-                    range [0, 1] and each row sums to 1.
-            """
-            N = data.shape[0]
-            C = w.shape[1]
-
-            s_exp = np.exp(data @ w)
-            s_exp_sum = np.sum(s_exp, axis=1)
-
-            res = np.zeros((data.shape[0], w.shape[1]))
-            for i in range(0, N):
-                res[i] = s_exp[i] / s_exp_sum[i]
-            # We've left this part for you to code for your projects.
-            return res
-
-
-
-
-
-
-        def loss_logistic_multi(data, labels, w):
-            """ Loss function for multi class logistic regression
-
-            Args:
-                data (np.array): Input data of shape (N, D)
-                labels (np.array): Labels of shape  (N, C) (in one-hot representation)
-                w (np.array): Weights of shape (D, C)
-
-            Returns:
-                float: Loss value
-            """
-            # We've left this part for you to code for your projects.
-            loss = -np.sum(np.sum(labels * np.log(f_softmax(data, w))))
-            return loss
-
-
-
-
-
-        def gradient_logistic_multi(data, labels, w):
-            """ Gradient function for multi class logistic regression
-
-            Args:
-                data (np.array): Input data of shape (N, D)
-                labels (np.array): Labels of shape  (N, )
-                w (np.array): Weights of shape (D, C)
-
-            Returns:
-                grad_w (np.array): Gradients of shape (D, C)
-            """
-            # We've left this part for you to code for your projects.
-            grad_w = data.T @ (f_softmax(data, w) - labels)
-            return grad_w
-
-
-
-
-        def logistic_regression_classify_multi(data, w):
-            """ Classification function for multi class logistic regression.
-
-            Args:
-                data (np.array): Dataset of shape (N, D).
-                w (np.array): Weights of logistic regression model of shape (D, C)
-            Returns:
-                np. array: Label assignments of data of shape (N, ).
-            """
-            #### write your code here: find predictions, argmax to find the correct label
-            # We've left this part for you to code for your projects.
-            predictions = np.argmax(f_softmax(data, w), axis=1)
-
-            return predictions
-
-
-
-        def logistic_regression_train_multi(self,data, labels, k=4,print_period=5, plot_period=5):
-            """ Classification function for multi class logistic regression.
-
-            Args:
-                data (np.array): Dataset of shape (N, D).
-                labels (np.array): Labels of shape (N, C)
-                k (integer): Number of classes. Default=3
-                max_iters (integer): Maximum number of iterations. Default:10
-                lr (integer): The learning rate of  the gradient step. Default:0.001
-                print_period (int): Num. iterations to print current loss.
-                    If 0, never printed.
-                plot_period (int): Num. iterations to plot current predictions.
-                    If 0, never plotted.
-
-            Returns:
-                np. array: Label assignments of data of shape (N, ).
-            """
-            weights = np.random.normal(0, 0.1, [data.shape[1], k])
-            for it in range(self.max_iters):
-                # YOUR CODE HERE
-                gradient = gradient_logistic_multi(data, labels, weights)
-                weights = weights - self.lr * gradient
-                ##################################
-                predictions = logistic_regression_classify_multi(data, weights)
-                if accuracy_fn(onehot_to_label(labels), predictions) == 1:
-                    break
-                # logging and plotting
-                if print_period and it % print_period == 0:
-                    print('loss at iteration', it, ":", loss_logistic_multi(data, labels, weights))
-               
-            return weights
-
-
-        self.weights_multi = logistic_regression_train_multi(training_data, training_labels, print_period=5,
-                                                        plot_period=5)
-
-
-
-        predictions_multi = logistic_regression_classify_multi(data_test, weights_multi)
-        print("Accuracy is", accuracy_fn(onehot_to_label(labels_test), predictions_multi))
-
-
-        
-        pred_labels = predictions_multi
-
+            # print("training data shape : ", training_data.shape)
+            # print("w : ", self.w.shape)
+            pred_labels = self.logistic_regression_classify_multi(training_data, self.w)
+            if accuracy_fn(pred_labels, training_labels) == 1:
+                break
 
         return pred_labels
+
 
     def predict(self, test_data):
         """
             Runs prediction on the test data.
-            
+
             Arguments:
                 test_data (np.array): test data of shape (N,D)
             Returns:
                 test_labels (np.array): labels of shape (N,)
-        """   
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
         """
-        DEFINIR SOFTMAX ET LOGISTIC CLASS MULTI EN DEHORS DE PREDICT ET FIT???
-        """
-        def f_softmax(data, w):
-            """ Softmax function
-            Args:
-                data (np.array): Input data of shape (N, D)
-                w (np.array): Weights of shape (D, C) where C is # of classes
-            Returns:
-                res (np.array): Probabilites of shape (N, C), where each value is in
-                    range [0, 1] and each row sums to 1.
-            """
-            N = data.shape[0]
-            C = w.shape[1]
-
-            s_exp = np.exp(data @ w)
-            s_exp_sum = np.sum(s_exp, axis=1)
-
-            res = np.zeros((data.shape[0], w.shape[1]))
-            for i in range(0, N):
-                res[i] = s_exp[i] / s_exp_sum[i]
-            # We've left this part for you to code for your projects.
-            return res
-
-        def logistic_regression_classify_multi(data, w):
-            """ Classification function for multi class logistic regression.
-
-            Args:
-                data (np.array): Dataset of shape (N, D).
-                w (np.array): Weights of logistic regression model of shape (D, C)
-            Returns:
-                np. array: Label assignments of data of shape (N, ).
-            """
-            #### write your code here: find predictions, argmax to find the correct label
-            # We've left this part for you to code for your projects.
-            predictions = np.argmax(f_softmax(data, w), axis=1)
-
-            return predictions
-        
-        
-        pred_labels2 = logistic_regression_classify_multi(test_data, weights_multi)
-        return pred_labels2
+        print("predicting values...")
+        test_labels = self.logistic_regression_classify_multi(test_data, self.w)
+        return test_labels
