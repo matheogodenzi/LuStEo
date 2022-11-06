@@ -46,7 +46,7 @@ class LinearRegression(object):
             self.lmda = args[0]
         # if there were no args or kwargs passed, we set the lmda to 0 (default value).
         else:
-            self.lmda = 0
+            self.lmda = 1
 
 
     def fit(self, training_data, training_labels):
@@ -59,15 +59,21 @@ class LinearRegression(object):
                 pred_regression_targets (np.array): predicted target of shape (N,regression_target_size)
         """
 
-        ##
-        ###
-        #### YOUR CODE HERE!
-        ###
-        ##
-        ones_column = np.ones(training_data.shape[0]).reshape(training_data.shape[0],-1)
-        X_bias = np.concatenate((training_data, ones_column), axis=1)
-        self.w = np.linalg.pinv(training_data)@training_labels
-        return
+        # adding a bias
+        # ones_column = np.ones(training_data.shape[0]).reshape(training_data.shape[0],-1)
+        # X_bias = np.concatenate((training_data, ones_column), axis=1)
+        # print("X_bias shape :", X_bias.shape)
+
+        # creating the identity matrix for ridge regression
+        Identity = np.identity(training_data.shape[1])
+
+        # learning: getting w
+        self.w = np.linalg.inv((training_data.T@training_data) + self.lmda*Identity)@training_data.T@training_labels
+        # print("self.w shape :", self.w.shape)
+
+        # prediction
+        pred_regression_targets = training_data@self.w
+        return pred_regression_targets
 
 
 
@@ -81,8 +87,8 @@ class LinearRegression(object):
                 pred_regression_targets (np.array): predicted targets of shape (N,regression_target_size)
         """
 
-        ##
-        ###
-        #### YOUR CODE HERE!
-        ###
-        ##
+        # Bias
+        # ones_column = np.ones(test_data.shape[0]).reshape(test_data.shape[0],-1)
+        #X_test_bias = np.concatenate((test_data, ones_column), axis=1)
+
+        return test_data@self.w
