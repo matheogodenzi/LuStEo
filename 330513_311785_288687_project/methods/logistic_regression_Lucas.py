@@ -44,8 +44,8 @@ class LogisticRegression(object):
 
         if "lr" in kwargs:
             self.lr = kwargs["lr"]
-        elif len(args) > 1:
-            self.lr = args[1]
+        elif len(args) > 0:
+            self.lr = args[0]
         else:
             self.lr = 0.1
 

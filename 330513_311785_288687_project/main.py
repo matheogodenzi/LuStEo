@@ -88,7 +88,7 @@ def main(args):
             train_labels = train_regression_target
             search_arg_name = "dummy_arg"
 
-        elif args.method_name == "linear_regression":
+        elif args.method_name == "ridge_regression":
             method_obj = LinearRegression(lmda=args.ridge_regression_lmda)
 
             """
@@ -105,21 +105,14 @@ def main(args):
             train_labels = train_regression_target
 
             # for cross validation
-            search_arg_vals = [0,1,2]
+            search_arg_vals = [1,100,2000]
             search_arg_name = "lmda"
 
         elif args.method_name == "logistic_regression":
-            method_obj = LogisticRegression(max_iters=args.max_iters, lr=args.lr)
-            search_arg_vals = [0,1,2]
-            search_arg_name = "lmda"
+            method_obj = LogisticRegression(lr=args.lr, max_iters=args.max_iters)
+            search_arg_vals = [0.0001, 0.00001, 0.000001]
+            search_arg_name = "lr"
 
-
-
-            ##
-            ###
-            #### YOUR CODE HERE!
-            ###
-            ##
 
         # cross validation (MS1)
         if args.use_cross_validation:

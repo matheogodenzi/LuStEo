@@ -35,20 +35,20 @@ class LogisticRegression(object):
             You can either pass these as args or kwargs.
         """
 
+        if "lr" in kwargs:
+            self.lr = kwargs["lr"]
+        elif len(args) > 0:
+            self.lr = args[0]
+        else:
+            self.lr = 0.1
+            
         if "max_iters" in kwargs:
             self.max_iters = kwargs["max_iters"]
         # if not, then check if args is a list with size bigger than 0.
-        elif len(args) > 0:
-            self.max_iters = args[0]
+        elif len(args) > 1:
+            self.max_iters = args[1]
         else:
             self.max_iters = 10
-
-        if "lr" in kwargs:
-            self.lr = kwargs["lr"]
-        elif len(args) > 1:
-            self.lr = args[1]
-        else:
-            self.lr = 0.1
 
     def f_softmax(self, training_data, w):
         """ Softmax function
@@ -128,7 +128,7 @@ class LogisticRegression(object):
                 break
 
         return pred_labels
-        
+
     def predict(self, test_data):
         """
             Runs prediction on the test data.

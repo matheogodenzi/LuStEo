@@ -15,11 +15,13 @@ def splitting_fn(data, labels, indices, fold_size, fold):
             train_data, train_label, val_data, val_label (np. arrays): split training and validation sets
     """
 
-    ##
-    ###
-    #### YOUR CODE HERE!
-    ###
-    ##
+    val_indices = indices[fold*(fold_size): (fold+1)*fold_size]
+    train_indices = np.setdiff1d(indices, val_indices)
+
+    train_data = data[train_indices, :]
+    val_data = data[val_indices, :]
+    train_label = labels[train_indices]
+    val_label = labels[val_indices]
 
     return train_data, train_label, val_data, val_label
 
@@ -53,6 +55,7 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
     fold_size = N//k_fold
 
     acc_list1 = []
+    hyp_list1 = []
     for arg in search_arg_vals:
         arg_dict = {search_arg_name: arg}
         # this is just a way of giving an argument
@@ -61,27 +64,18 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
 
         acc_list2 = []
         for fold in range(k_fold):
-            pass
+            train_data, train_label, val_data, val_label = splitting_fn(data, labels, indices, fold_size, fold)
+            method_obj.fit(train_data, train_label)
+            predicted_label = method_obj.predict(val_data)
+            accuracy = metric(predicted_label, val_label)
+            acc_list2.append(accuracy)
 
+        acc_list1.append(np.mean(acc_list2))
+        hyp_list1.append(arg_dict[search_arg_name])
 
-            ##
-            ###
-            #### YOUR CODE HERE!
-            ###
-            ##
-
-
-        ##
-        ###
-        #### YOUR CODE HERE!
-        ###
-        ##
-
-    ##
-    ###
-    #### YOUR CODE HERE!
-    ###
-    ##
+    best_acc = max(acc_list1)
+    best_hyperparam_ind = find_param_ops(acc_list1)
+    best_hyperparam = hyp_list1[best_hyperparam_ind]
 
 
     return best_hyperparam, best_acc
