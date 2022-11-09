@@ -1,6 +1,7 @@
 import numpy as np
 import argparse
 import utils
+import time
 
 # these will be imported in MS2. uncomment then!
 #import torch
@@ -76,7 +77,7 @@ def main(args):
     # we show how to create the objects for DummyClassifier and DummyRegressor
     # the rest of the methods are up to you!
     else:
-
+        s1 = time.time()
         if args.method_name == "dummy_classifier":
             method_obj =  DummyClassifier()
             search_arg_vals = [1,2,3]
@@ -133,6 +134,10 @@ def main(args):
             print("Final classification accuracy is", acc)
             macrof1 = macrof1_fn(pred_labels,test_labels)
             print("Final macro F1 score is", macrof1)
+
+    #calculating the time of the process
+    s2 = time.time()
+    print(f"{args.method_name} takes {s2-s1} seconds")
 
 
 if __name__ == '__main__':

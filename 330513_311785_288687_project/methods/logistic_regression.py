@@ -88,8 +88,6 @@ class LogisticRegression(object):
         """
         # print("f_soft :", self.f_softmax(training_data, w).shape)
         # print("training_labels",training_labels.shape)
-        print(label_to_onehot(training_labels).shape)
-        print(self.f_softmax(training_data, w).shape)
         grad_w = training_data.T@(self.f_softmax(training_data, w)-label_to_onehot(training_labels))
 
         return grad_w
@@ -118,8 +116,8 @@ class LogisticRegression(object):
                 pred_labels (np.array): target of shape (N,)
         """
 
-        # print("fitting the model...")
-        self.w = np.random.normal(0, 0.1, [training_data.shape[1], 4])
+        # print(label_to_onehot(training_labels).shape)
+        self.w = np.random.normal(0, 0.1, [training_data.shape[1], label_to_onehot(training_labels).shape[1]])
         for it in range(self.max_iters):
             self.w = self.w - self.lr*self.gradient_logistic_multi(training_data, training_labels, self.w)
 
