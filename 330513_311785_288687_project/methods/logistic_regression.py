@@ -35,20 +35,20 @@ class LogisticRegression(object):
             You can either pass these as args or kwargs.
         """
 
+        if "lr" in kwargs:
+            self.lr = kwargs["lr"]
+        elif len(args) > 0:
+            self.lr = args[0]
+        else:
+            self.lr = 0.1
+
         if "max_iters" in kwargs:
             self.max_iters = kwargs["max_iters"]
         # if not, then check if args is a list with size bigger than 0.
-        elif len(args) > 0:
-            self.max_iters = args[0]
+        elif len(args) > 1:
+            self.max_iters = args[1]
         else:
             self.max_iters = 10
-
-        if "lr" in kwargs:
-            self.lr = kwargs["lr"]
-        elif len(args) > 1:
-            self.lr = args[1]
-        else:
-            self.lr = 0.1
 
     def f_softmax(self, training_data, w):
         """ Softmax function
@@ -116,8 +116,8 @@ class LogisticRegression(object):
                 pred_labels (np.array): target of shape (N,)
         """
 
-        print("fitting the model...")
-        self.w = np.random.normal(0, 0.1, [training_data.shape[1], 4])
+        # print(label_to_onehot(training_labels).shape)
+        self.w = np.random.normal(0, 0.1, [training_data.shape[1], label_to_onehot(training_labels).shape[1]])
         for it in range(self.max_iters):
             self.w = self.w - self.lr*self.gradient_logistic_multi(training_data, training_labels, self.w)
 
@@ -128,7 +128,7 @@ class LogisticRegression(object):
                 break
 
         return pred_labels
-        
+
     def predict(self, test_data):
         """
             Runs prediction on the test data.
@@ -138,6 +138,6 @@ class LogisticRegression(object):
             Returns:
                 test_labels (np.array): labels of shape (N,)
         """
-        print("predicting values...")
+        # print("predicting values...")
         test_labels = self.logistic_regression_classify_multi(test_data, self.w)
         return test_labels
