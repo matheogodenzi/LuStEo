@@ -3,7 +3,7 @@ import sys
 sys.path.append('..')
 from utils import label_to_onehot
 from utils import onehot_to_label
-from metrics import accuracy_fn
+from metrics import accuracy_fn, macrof1_fn, mse_fn
 
 
 class LogisticRegression(object):
