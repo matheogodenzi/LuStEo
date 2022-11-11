@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 import argparse
 
 def label_to_onehot(label):
@@ -11,14 +11,14 @@ def onehot_to_label(onehot):
 
 def normalize_fn(data, means, stds):
     """This function takes the data, the means,
-    and the standard deviatons(precomputed). It 
+    and the standard deviatons(precomputed). It
     returns the normalized data.
-    
+
     Inputs:
         data : shape (NxD)
         means: shape (1XD)
         stds : shape (1xD)
-        
+
     Outputs:
         data_normed: shape (NxD)
     """
@@ -26,3 +26,6 @@ def normalize_fn(data, means, stds):
     # return the normalized features
     return (data - means) / stds
 
+
+def plotting_fn(metrics_array):
+    return
