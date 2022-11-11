@@ -3,7 +3,9 @@ import sys
 sys.path.append('..')
 from utils import label_to_onehot
 from utils import onehot_to_label
+import pandas as pd
 from metrics import accuracy_fn, macrof1_fn, mse_fn
+import csv
 
 
 class LogisticRegression(object):
@@ -118,15 +120,19 @@ class LogisticRegression(object):
 
         # print(label_to_onehot(training_labels).shape)
         self.w = np.random.normal(0, 0.1, [training_data.shape[1], label_to_onehot(training_labels).shape[1]])
+        #df = pd.DataFrame({"acc":[], "MF1":[], "MSE":[]})
         for it in range(self.max_iters):
             self.w = self.w - self.lr*self.gradient_logistic_multi(training_data, training_labels, self.w)
-
             # print("training data shape : ", training_data.shape)
             # print("w : ", self.w.shape)
             pred_labels = self.logistic_regression_classify_multi(training_data, self.w)
             if accuracy_fn(pred_labels, training_labels) == 1:
                 break
-
+            #acc = accuracy_fn(pred_labels, training_labels)
+            #MF1 = macrof1_fn(pred_labels, training_labels)
+            #MSE = mse_fn(pred_labels, training_labels)
+            #df.loc[it] = [acc, MF1, MSE]
+            #graph_data = df.to_csv('metrics_it.csv', index = True)
         return pred_labels
 
     def predict(self, test_data):

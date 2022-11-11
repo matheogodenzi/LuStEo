@@ -1,5 +1,7 @@
 import numpy as np
 import argparse
+import pandas as pd
+import matplotlib.pyplot as plt
 
 def label_to_onehot(label):
     one_hot_labels = np.zeros([label.shape[0], int(np.max(label)+1)])
@@ -27,5 +29,31 @@ def normalize_fn(data, means, stds):
     return (data - means) / stds
 
 
-def plotting_fn(metrics_array):
+def plotting_param(file_name):
+    df = pd.read_csv(file_name)
+    del df['Unnamed: 0']
+    df.plot(kind = 'scatter',
+        x = df.columns[0],
+        y = df.columns[1],
+        color = 'red')
+    plt.xscale('log')
+    plt.show()
     return
+
+def plotting_it(file_name):
+    df = pd.read_csv(file_name)
+    df[df.columns[1]] = df[df.columns[1]]/100
+    fig, ax = plt.subplots()
+    #ax.plot(df[df.columns[0]], df[df.columns[1]], color = 'red')
+    #ax.set_xlabel("iterations")
+    #ax.set_ylabel("acc (%)")
+    #ax2 = ax.twinx()
+    #ax2.plot(df[df.columns[0]], df[df.columns[2]], df[df.columns[3]], color='blue')
+    #ax2.set_ylabel("MF1 & MSE")
+    df.plot(x=df.columns[0], y=[df.columns[1], df.columns[2], df.columns[3]])
+    plt.show()
+    return
+
+#if __name__ == "__main__":
+    #plotting_param("param_opt.csv")
+    #plotting_it("metrics_it.csv")

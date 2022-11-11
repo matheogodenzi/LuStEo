@@ -1,5 +1,7 @@
 import numpy as np
 from metrics import accuracy_fn, mse_fn, macrof1_fn
+import csv
+import pandas as pd
 
 def splitting_fn(data, labels, indices, fold_size, fold):
     """
@@ -54,9 +56,10 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
     np.random.shuffle(indices)
     fold_size = N//k_fold
 
+    #df = pd.DataFrame({search_arg_name:[], str(metric):[]})
     acc_list1 = []
     hyp_list1 = []
-    for arg in search_arg_vals:
+    for i, arg in enumerate(search_arg_vals):
         arg_dict = {search_arg_name: arg}
         # this is just a way of giving an argument
         # (example: for DummyClassifier, this is "dummy_arg":1)
@@ -72,6 +75,11 @@ def cross_validation(method_obj=None, search_arg_name=None, search_arg_vals=[], 
 
         acc_list1.append(np.mean(acc_list2))
         hyp_list1.append(arg_dict[search_arg_name])
+        #df.loc[i] = [arg, np.mean(acc_list2)]
+
+    # print(f"in cross validation funcion\n {df}")
+    # export the df in a csvfile
+    #graph_data = df.to_csv('param_opt.csv', index = True)
 
     best_acc = max(acc_list1)
     best_hyperparam_ind = find_param_ops(acc_list1)
