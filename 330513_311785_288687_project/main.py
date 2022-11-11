@@ -92,7 +92,7 @@ def main(args):
         elif args.method_name == "ridge_regression":
             method_obj = LinearRegression(lmda=args.ridge_regression_lmda)
 
-            """
+
             # defining bias term training data
             ones_column = np.ones(train_data.shape[0]).reshape(train_data.shape[0],-1)
             train_data = np.concatenate((ones_column, train_data), axis=1)
@@ -100,13 +100,13 @@ def main(args):
             # defining bias term testing data
             ones_column = np.ones(test_data.shape[0]).reshape(test_data.shape[0],-1)
             test_data = np.concatenate((ones_column, test_data), axis=1)
-            """
+
 
             # getting the targets instead of all the labels
             train_labels = train_regression_target
 
             # for cross validation
-            search_arg_vals = [1,100,2000]
+            search_arg_vals = [1, 3, 10, 50, 100, 500, 1000, 2000]
             search_arg_name = "lmda"
 
         elif args.method_name == "logistic_regression":
@@ -120,6 +120,7 @@ def main(args):
             print("Using cross validation")
             best_arg, best_val_acc = cross_validation(method_obj=method_obj, search_arg_name=search_arg_name, search_arg_vals=search_arg_vals, data=train_data, labels=train_labels, k_fold=4)
             # set the classifier/regression object to have the best hyperparameter found via cross validation:
+            print(f"best argument : {best_arg} \n best minimisable paramter : {best_val_acc}")
             method_obj.set_arguments(best_arg)
 
         # FIT AND PREDICT:
