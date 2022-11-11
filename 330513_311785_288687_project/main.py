@@ -40,7 +40,7 @@ def main(args):
     # Note: We only use the following methods for more old-school methods, not the nn!
     train_data, train_regression_target, train_labels = train_dataset.data, train_dataset.regression_target, train_dataset.labels
     test_data, test_regression_target, test_labels = test_dataset.data, test_dataset.regression_target, test_dataset.labels
-    print(train_labels)
+    # print(train_labels)
     print("Dataloading is complete!")
 
     # Dimensionality reduction (MS2)
