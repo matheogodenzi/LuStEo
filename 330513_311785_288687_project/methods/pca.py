@@ -23,11 +23,11 @@ class PCA(object):
             The PCA class should have a variable defining the number of dimensions (d).
             You can either pass this as an arg or a kwarg.
         """
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+       if "d" in kwargs:
+            self.d = kwargs["d"]
+        elif len(args) > 0:
+            self.d = args[0]
+
 
     def find_principal_components(self, training_data):
         """
@@ -47,6 +47,12 @@ class PCA(object):
         #### YOUR CODE HERE! 
         ###
         ##
+        self.mean = np.mean(training_data)
+        #mean de toute la data ou par vecteur?
+        # si mean par vecteurs: self.mean = np.mean(training_data, axis=1)
+        C = 1/shape(training_data[0] * np.sum((training_data-self.mean)*(training_data-self.mean).T)
+        self.W = 
+        exvar = self.W.T@C@self.W
 
         return exvar
 
@@ -65,6 +71,7 @@ class PCA(object):
         #### YOUR CODE HERE! 
         ###
         ##
+        data_reduced = self.W.T @ (data - self.mean)
         
         return data_reduced
         
