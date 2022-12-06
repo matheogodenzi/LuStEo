@@ -8,9 +8,9 @@ from metrics import accuracy_fn, macrof1_fn
 
 class SimpleNetwork(nn.Module):
     """
-    A network which does both classification and regression!
+    A network which does classification!
     """
-    def __init__(self, input_size, num_classes, regression_output_size, hidden_size=32):
+    def __init__(self, input_size, num_classes, hidden_size=32):
         super(SimpleNetwork, self).__init__()
 
         ##
@@ -21,13 +21,12 @@ class SimpleNetwork(nn.Module):
 
     def forward(self, x):
         """
-        Takes as input the data x and outputs both the 
-        classification and regression outputs.
+        Takes as input the data x and outputs the 
+        classification outputs.
         Args: 
             x (torch.tensor): shape (N, D)
         Returns:
             output_class (torch.tensor): shape (N, C) (logits)
-            output_reg: shape (N, regression_target_size) 
         """
 
         ##
@@ -36,7 +35,7 @@ class SimpleNetwork(nn.Module):
         ###
         ##
 
-        return output_class, output_reg
+        return output_class
 
 class Trainer(object):
 
@@ -53,7 +52,6 @@ class Trainer(object):
         self.beta = beta
 
         self.classification_criterion = nn.CrossEntropyLoss()
-        self.regression_criterion = nn.MSELoss(reduction="mean")
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr)
 
     def train_all(self, dataloader_train, dataloader_val):
@@ -75,13 +73,6 @@ class Trainer(object):
         """
         Method to train for ONE epoch.
         Should loop over the batches in the dataloader. (Recall the exercise session!)
-        This method should compute TWO losses (unlike what we have seen so far)
-        One loss should be for classification, one loss should be for training. 
-        You can sum these two losses for one overall loss. 
-        Ex:
-            loss1 = self.classification_criterion(output_class, labels)
-            loss2 = self.regression_criterion(output_reg, regression_targets)
-            loss = loss1 + loss2
         Don't forget to set your model to training mode!
         i.e. self.model.train()
         """
@@ -100,10 +91,8 @@ class Trainer(object):
 
             Returns:
                 Note: N is the amount of validation/test data. 
-                We return two torch tensors which we will use to save our results (for the competition!)
+                We return one torch tensor which we will use to save our results (for the competition!)
                 results_class (torch.tensor): classification results of shape (N,)
-                results_reg  (torch.tensor): regression results of shape (N, regression_target_size)
-
         """
         ##
         ###
@@ -111,4 +100,4 @@ class Trainer(object):
         ###
         ##
         
-        return results_class, results_reg
+        return results_class
