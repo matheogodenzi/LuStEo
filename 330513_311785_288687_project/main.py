@@ -173,6 +173,6 @@ if __name__ == '__main__':
     # Feel free to add more arguments here if you need
 
     # MS2 arguments
-    #parser.add_argument('--use_pca', action="store_true", help="to enable PCA")
-    #args = parser.parse_args()
-    #main(args)
+    parser.add_argument('--use_pca', action="store_true", help="to enable PCA")
+    args = parser.parse_args()
+    main(args)

@@ -1,4 +1,6 @@
 import numpy as np
+from utils import normalize_fn
+
 class KNN(object):
     """
         kNN classifier object.
@@ -33,8 +35,8 @@ class KNN(object):
         ##
 
         # first checks if "k" was passed as a kwarg.
-        if "knn_neighbours" in kwargs:
-            self.k = kwargs["knn_neighbours"]
+        if "k" in kwargs:
+            self.k = kwargs["k"]
         # if not, then check if args is a list with size bigger than 0.
         elif len(args) > 0 :
             self.k = args[0]
@@ -42,37 +44,33 @@ class KNN(object):
         else:
             self.k = 3
 
-    def normalize(data, means, stds):
-        return (data-means)/stds
-
-    def euclidean_dist(example, training_examples):
+    def euclidean_dist(self, example, training_examples):
         return np.sqrt(np.sum((training_examples - example)**2, 1))
 
-    def find_k_nearest_neighbors(k, distances):
+    def find_k_nearest_neighbors(self, k, distances):
         indices = np.argsort(distances)
         return indices[:k]
 
-    def predict_label(neighbor_labels):
+    def predict_label(self, neighbor_labels):
         return np.argmax(np.bincount(neighbor_labels))
 
-    def kNN_one_example(unlabeled_example, training_features, training_labels, k):
-
+    def kNN_one_example(self, unlabeled_example, training_features, training_labels, k):
         # Normalize the data
         mean_val = training_features.mean(0,keepdims=True)
         std_val = training_features.std(0,keepdims=True)
-        norm_train = normalize(training_features, mean_val,std_val)
-        norm_test_single = normalize(unlabeled_example, mean_val, std_val)
+        norm_train = normalize_fn(training_features, mean_val,std_val)
+        norm_test_single = normalize_fn(unlabeled_example, mean_val, std_val)
 
         # find distance of the single test example w.r.t. all the training examples
-        distances = euclidean_dist(norm_test_single, norm_train)
+        distances = self.euclidean_dist(norm_test_single, norm_train)
 
         # find the nearest neighbors
-        nn_indices = find_k_nearest_neighbors(self.k, distances)
+        nn_indices = self.find_k_nearest_neighbors(k, distances)
 
         # find the labels of the nearest neighbors
         neighbor_labels = training_labels[nn_indices]
 
-        best_label = predict_label(neighbor_labels)
+        best_label = self.predict_label(neighbor_labels)
 
         return best_label
 
@@ -91,10 +89,11 @@ class KNN(object):
                 pred_labels (np.array): labels of shape (N,)
         """
         print("test")
+        print(type(training_data))
         self.training_data = training_data
         self.training_labels = training_labels
 
-        pred_labels = np.apply_along_axis(kNN_one_example, 1, self.training_data, self.training_features, self.training_labels, self.k)
+        pred_labels = np.apply_along_axis(self.kNN_one_example, 1, self.training_data, self.training_data, self.training_labels, self.k)
 
         return pred_labels
 
@@ -107,7 +106,7 @@ class KNN(object):
             Returns:
                 test_labels (np.array): labels of shape (N,)
         """
-
-        test_labels = np.apply_along_axis(kNN_one_example, 1, test_data, self.training_features, self.training_labels, self.k)
+        print("test in predict")
+        test_labels = np.apply_along_axis(self.kNN_one_example, 1, test_data, self.training_data, self.training_labels, self.k)
 
         return test_labels
