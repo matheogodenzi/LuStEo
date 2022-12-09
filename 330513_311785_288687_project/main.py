@@ -40,6 +40,7 @@ def main(args):
     # Note: We only use the following methods for more old-school methods, not the nn!
     train_data, train_regression_target, train_labels = train_dataset.data, train_dataset.regression_target, train_dataset.labels
     test_data, test_regression_target, test_labels = test_dataset.data, test_dataset.regression_target, test_dataset.labels
+    #print(train_labels)
     # print(train_labels)
     print("Dataloading is complete!")
 
@@ -125,6 +126,11 @@ def main(args):
             search_arg_vals = [1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
             search_arg_name = "lr"
 
+        elif args.method_name == "knn":
+            method_obj = KNN(k=args.knn_neighbours)
+            search_arg_vals = [6]
+            search_arg_name = "knn_neighbours"
+
 
         # cross validation (MS1)
         if args.use_cross_validation:
@@ -167,6 +173,6 @@ if __name__ == '__main__':
     # Feel free to add more arguments here if you need
 
     # MS2 arguments
-    parser.add_argument('--use_pca', action="store_true", help="to enable PCA")
-    args = parser.parse_args()
-    main(args)
+    #parser.add_argument('--use_pca', action="store_true", help="to enable PCA")
+    #args = parser.parse_args()
+    #main(args)
