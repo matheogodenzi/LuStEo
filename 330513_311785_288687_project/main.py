@@ -80,9 +80,10 @@ def main(args):
         trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
         trainer.train_all(train_dataloader, val_dataloader)
         results_class = trainer.eval(test_dataloader)
-        print(results_class.size())
+        print(trainer.acc)
+        #print(results_class.size())
         torch.save(results_class, "results_class.txt")
-        # np.savetxt('results.txt', results_class)
+        np.savetxt('results.txt', results_class)
 
     # classical ML methods (MS1 and MS2)
     # we first create the classification/regression objects

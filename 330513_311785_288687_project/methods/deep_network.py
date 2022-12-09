@@ -122,26 +122,22 @@ class Trainer(object):
             for it, batch in enumerate(dataloader):
                 # Get batch of data.
                 x, y, y_class = batch
-                #curr_bs = x.shape[0]
-                logits = self.model.forward(x)
+                curr_bs = x.shape[0]
+                res = torch.argmax(self.model(x),dim=1)
+                acc_run += accuracy_fn(res.numpy(),y_class.numpy())*curr_bs
+
+                # verifying shapes
+                #print(it)
+                #print('res', res)
+                #print('y_class', y_class)
+                #print('********')
+
                 if it == 0:
-                    results_class = np.argmax(logits, axis=1)
+                    results_class = res
                 else:
-                    results_class = torch.cat((results_class, np.argmax(logits, axis=1)))
-
-            '''
-            # testing dimensions
-            #logits = self.model.forward(x)
-            #print(f'logits shape : {np.argmax(logits, axis=1)}')
-            print(f'y_class = {y_class}')
-            print(f'results_class = {results_class}')
-
-            #curr_bs = x.shape[0]
-            acc_run += accuracy_fn(results_class, y_class) * curr_bs
-            acc = acc_run / len(dataloader.dataset)
-            '''
-
-            #print(', accuracy test: {:.2f}'.format(acc))
-            #print(it, results_class)
+                    results_class = torch.cat((results_class, res))
+                #print(it)
+            self.acc = acc_run/len(dataloader.dataset)
+            #print('acc =', self.acc)
 
         return results_class
