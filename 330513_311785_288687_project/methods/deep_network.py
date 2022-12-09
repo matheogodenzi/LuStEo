@@ -10,30 +10,31 @@ class SimpleNetwork(nn.Module):
     """
     A network which does classification!
     """
-    def __init__(self, input_size, num_classes, hidden_size=32):
+    def __init__(self, input_size, num_classes, hidden_size=(120, 32)):
         super(SimpleNetwork, self).__init__()
 
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+        # defining characteristic parameters of the network
+        self.input_size = input_size
+        self.num_classes = num_classes
+        self.hidden_size = hidden_size
+
+        # defining layers transitions
+        self.fc1 = nn.Linear(input_size, hidden_size[0])
+        self.fc2 = nn.Linear(hidden_size[0], hidden_size[1])
+        self.fc3 = nn.Linear(hidden_size[1], num_classes)
 
     def forward(self, x):
         """
-        Takes as input the data x and outputs the 
+        Takes as input the data x and outputs the
         classification outputs.
-        Args: 
+        Args:
             x (torch.tensor): shape (N, D)
         Returns:
             output_class (torch.tensor): shape (N, C) (logits)
         """
-
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        output_class = self.fc3(x)
 
         return output_class
 
@@ -76,12 +77,30 @@ class Trainer(object):
         Don't forget to set your model to training mode!
         i.e. self.model.train()
         """
-        
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
+
+        # setting my model to training mode
+        self.model.train()
+
+        # looping over each batch of the dataloader
+        for it, batch in enumerate(dataloader):
+            # Load a batch, break it down in samples and targets.
+            x, y, y_class = batch
+
+            # Run forward pass.
+            logits = self.model.forward(x)  # YOUR CODE HERE
+
+            # Compute loss (using 'criterion').
+            loss = self.classification_criterion(logits, y_class)  # YOUR CODE HERE
+
+            # Run backward pass.
+            loss.backward()  # YOUR CODE HERE
+
+            # Update the weights using optimizer.
+            self.optimizer.step()  # YOUR CODE HERE
+
+            # Zero-out the accumulated gradients.
+            self.optimizer.zero_grad()  # YOUR CODE HERE
+
 
     def eval(self, dataloader):
         """
@@ -90,14 +109,24 @@ class Trainer(object):
             i.e. self.model.eval()
 
             Returns:
-                Note: N is the amount of validation/test data. 
+                Note: N is the amount of validation/test data.
                 We return one torch tensor which we will use to save our results (for the competition!)
                 results_class (torch.tensor): classification results of shape (N,)
         """
-        ##
-        ###
-        #### YOUR CODE HERE! 
-        ###
-        ##
-        
+        # initiating evaluation mode
+        self.model.eval()
+
+        with torch.no_grad():
+            acc_run = 0
+            for it, batch in enumerate(dataloader):
+                # Get batch of data.
+                x, y, y_class = batch
+                curr_bs = x.shape[0]
+                print(f'x : {x.size()}')
+                print(f'y_class : {y_class}')
+                acc_run += accuracy_fn(self.model(x), y_class) * curr_bs
+            acc = acc_run / len(dataloader_test.dataset)
+
+            print(', accuracy test: {:.2f}'.format(acc))
+
         return results_class
