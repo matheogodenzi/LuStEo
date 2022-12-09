@@ -72,6 +72,7 @@ def main(args):
         for it, batch in enumerate(train_dataloader):
             print(batch[2])
         '''
+        
         # create model
         model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes)
 
