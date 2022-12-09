@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from metrics import accuracy_fn, macrof1_fn
+import numpy as np
 
 ## MS2!!
 
@@ -121,12 +122,26 @@ class Trainer(object):
             for it, batch in enumerate(dataloader):
                 # Get batch of data.
                 x, y, y_class = batch
-                curr_bs = x.shape[0]
-                print(f'x : {x.size()}')
-                print(f'y_class : {y_class}')
-                acc_run += accuracy_fn(self.model(x), y_class) * curr_bs
-            acc = acc_run / len(dataloader_test.dataset)
+                #curr_bs = x.shape[0]
+                logits = self.model.forward(x)
+                if it == 0:
+                    results_class = np.argmax(logits, axis=1)
+                else:
+                    results_class = torch.cat((results_class, np.argmax(logits, axis=1)))
 
-            print(', accuracy test: {:.2f}'.format(acc))
+            '''
+            # testing dimensions
+            #logits = self.model.forward(x)
+            #print(f'logits shape : {np.argmax(logits, axis=1)}')
+            print(f'y_class = {y_class}')
+            print(f'results_class = {results_class}')
+
+            #curr_bs = x.shape[0]
+            acc_run += accuracy_fn(results_class, y_class) * curr_bs
+            acc = acc_run / len(dataloader.dataset)
+            '''
+
+            #print(', accuracy test: {:.2f}'.format(acc))
+            #print(it, results_class)
 
         return results_class

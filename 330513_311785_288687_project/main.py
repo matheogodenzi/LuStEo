@@ -64,21 +64,24 @@ def main(args):
         val_dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False)
         test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
+
         # determining the feature dimensions and number of classes of the training dataset
+        '''
         print(f'feature dimensions of the training dataset are : {train_dataset.feature_dim}')
         print(f'number of classes to sort the data into : {train_dataset.num_classes}')
         for it, batch in enumerate(train_dataloader):
             print(batch[2])
+        '''
         # create model
-
-
         model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes)
 
         # training loop
         trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
         trainer.train_all(train_dataloader, val_dataloader)
         results_class = trainer.eval(test_dataloader)
+        print(results_class.size())
         torch.save(results_class, "results_class.txt")
+        # np.savetxt('results.txt', results_class)
 
     # classical ML methods (MS1 and MS2)
     # we first create the classification/regression objects
