@@ -40,11 +40,8 @@ def main(args):
     # Note: We only use the following methods for more old-school methods, not the nn!
     train_data, train_regression_target, train_labels = train_dataset.data, train_dataset.regression_target, train_dataset.labels
     test_data, test_regression_target, test_labels = test_dataset.data, test_dataset.regression_target, test_dataset.labels
-#<<<<<<< HEAD
     #print(train_labels)
-#=======
     # print(train_labels)
-#>>>>>>> 941cd34621ddf5fc5e629cfc0ba9edf8be2c412f
     print("Dataloading is complete!")
 
     #initializing the time calulation
@@ -68,21 +65,25 @@ def main(args):
         val_dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False)
         test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
+
         # determining the feature dimensions and number of classes of the training dataset
+        '''
         print(f'feature dimensions of the training dataset are : {train_dataset.feature_dim}')
         print(f'number of classes to sort the data into : {train_dataset.num_classes}')
         for it, batch in enumerate(train_dataloader):
             print(batch[2])
+        '''
+
         # create model
-
-
         model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes)
 
         # training loop
         trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
         trainer.train_all(train_dataloader, val_dataloader)
         results_class = trainer.eval(test_dataloader)
+        print(results_class.size())
         torch.save(results_class, "results_class.txt")
+        # np.savetxt('results.txt', results_class)
 
     # classical ML methods (MS1 and MS2)
     # we first create the classification/regression objects
