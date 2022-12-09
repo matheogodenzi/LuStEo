@@ -13,7 +13,7 @@ class PCA(object):
         """
         self.set_arguments(*args, **kwargs)
         #the mean of the training data (will be computed from the training data and saved to this variable)
-        self.mean = None 
+        self.mean = None
         #the principal components (will be computed from the training data and saved to this variable)
         self.W = None
 
@@ -23,8 +23,9 @@ class PCA(object):
             The PCA class should have a variable defining the number of dimensions (d).
             You can either pass this as an arg or a kwarg.
         """
-       if "d" in kwargs:
-            self.d = kwargs["d"]
+
+        if "d" in kwargs:
+           self.d = kwargs["d"]
         elif len(args) > 0:
             self.d = args[0]
 
@@ -32,7 +33,7 @@ class PCA(object):
     def find_principal_components(self, training_data):
         """
             Finds the principal components of the training data. Returns the explained variance in percentage.
-            IMPORTANT: 
+            IMPORTANT:
             This function should save the mean of the training data and the principal components as
             self.mean and self.W, respectively.
 
@@ -44,22 +45,26 @@ class PCA(object):
 
         ##
         ###
-        #### YOUR CODE HERE! 
+        #### YOUR CODE HERE!
         ###
         ##
+
+        '''
         self.mean = np.mean(training_data)
         #mean de toute la data ou par vecteur?
         # si mean par vecteurs: self.mean = np.mean(training_data, axis=1)
         C = 1/shape(training_data[0] * np.sum((training_data-self.mean)*(training_data-self.mean).T)
-        self.W = 
+        self.W =
         exvar = self.W.T@C@self.W
 
         return exvar
+        '''
+        pass
 
     def reduce_dimension(self, data):
         """
             Reduce the dimensions of the data, using the previously computed
-            self.mean and self.W. 
+            self.mean and self.W.
 
             Arguments:
                 data (np.array): data of shape (N,D)
@@ -68,11 +73,9 @@ class PCA(object):
         """
         ##
         ###
-        #### YOUR CODE HERE! 
+        #### YOUR CODE HERE!
         ###
         ##
         data_reduced = self.W.T @ (data - self.mean)
-        
-        return data_reduced
-        
 
+        return data_reduced

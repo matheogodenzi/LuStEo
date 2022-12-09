@@ -43,6 +43,9 @@ def main(args):
     # print(train_labels)
     print("Dataloading is complete!")
 
+    #initializing the time calulation
+    s1 = time.time()
+
     # Dimensionality reduction (MS2)
     if args.use_pca:
         print("Using PCA")
@@ -61,12 +64,19 @@ def main(args):
         val_dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False)
         test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
+        # determining the feature dimensions and number of classes of the training dataset
+        print(f'feature dimensions of the training dataset are : {train_dataset.feature_dim}')
+        print(f'number of classes to sort the data into : {train_dataset.num_classes}')
+        for it, batch in enumerate(train_dataloader):
+            print(batch[2])
         # create model
+
+
         model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes)
 
         # training loop
         trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
-        ttrainer.train_all(train_dataloader, val_dataloader)
+        trainer.train_all(train_dataloader, val_dataloader)
         results_class = trainer.eval(test_dataloader)
         torch.save(results_class, "results_class.txt")
 
@@ -76,7 +86,6 @@ def main(args):
     # we show how to create the objects for DummyClassifier and DummyRegressor
     # the rest of the methods are up to you!
     else:
-        s1 = time.time()
         if args.method_name == "dummy_classifier":
             method_obj =  DummyClassifier()
             search_arg_vals = [1,2,3]
