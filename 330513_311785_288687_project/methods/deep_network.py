@@ -5,7 +5,7 @@ from metrics import accuracy_fn, macrof1_fn
 import numpy as np
 
 ## MS2!!
-# optimal parameters found : lr = 1e-4, max-iters=1500
+# optimal parameters found : lr = 1e-4, max-iters=500
 
 class SimpleNetwork(nn.Module):
     """
