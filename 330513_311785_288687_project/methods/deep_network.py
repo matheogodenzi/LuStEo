@@ -5,7 +5,7 @@ from metrics import accuracy_fn, macrof1_fn
 import numpy as np
 
 ## MS2!!
-
+# optimal parameters found : lr = 1e-4, max-iters=1500
 
 class SimpleNetwork(nn.Module):
     """
@@ -142,7 +142,7 @@ class Trainer(object):
                 #print(it)
             self.acc = acc_run/len(dataloader.dataset)
             self.f1 = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
-            print('acc =', self.acc)
-            print('f1 score =', self.f1)
+            #print('acc =', self.acc)
+            #print('f1 score =', self.f1)
 
         return results_class
