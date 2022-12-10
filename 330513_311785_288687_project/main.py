@@ -74,13 +74,14 @@ def main(args):
         '''
 
         # create model
-        model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes)
+        model = SimpleNetwork(input_size=train_dataset.feature_dim, num_classes=train_dataset.num_classes, hidden_size=args.hidden_layers)
 
         # training loop
         trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
         trainer.train_all(train_dataloader, val_dataloader)
         results_class = trainer.eval(test_dataloader)
-        print(trainer.acc)
+        print(f'final accuracy {trainer.acc}')
+        print(f'final f1 score {trainer.f1}')
         #print(results_class.size())
         torch.save(results_class, "results_class.txt")
         np.savetxt('results.txt', results_class)
@@ -172,6 +173,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_cross_validation', action="store_true", help="to enable cross validation")
 
     # Feel free to add more arguments here if you need
+    parser.add_argument('--hidden_layers', default=(100, 50), help="sets the number of hidden neurons in the deep network on both layers")
 
     # MS2 arguments
     parser.add_argument('--use_pca', action="store_true", help="to enable PCA")

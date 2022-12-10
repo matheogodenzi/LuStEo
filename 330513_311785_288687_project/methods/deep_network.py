@@ -11,7 +11,7 @@ class SimpleNetwork(nn.Module):
     """
     A network which does classification!
     """
-    def __init__(self, input_size, num_classes, hidden_size=(120, 32)):
+    def __init__(self, input_size, num_classes, hidden_size=(300, 20)):
         super(SimpleNetwork, self).__init__()
 
         # defining characteristic parameters of the network
@@ -23,7 +23,7 @@ class SimpleNetwork(nn.Module):
         self.fc1 = nn.Linear(input_size, hidden_size[0])
         self.fc2 = nn.Linear(hidden_size[0], hidden_size[1])
         self.fc3 = nn.Linear(hidden_size[1], num_classes)
-
+        # self.fc4 = nn.Linear(hidden_size[2], num_classes)
     def forward(self, x):
         """
         Takes as input the data x and outputs the
@@ -33,9 +33,10 @@ class SimpleNetwork(nn.Module):
         Returns:
             output_class (torch.tensor): shape (N, C) (logits)
         """
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        output_class = self.fc3(x)
+        output_class = F.relu(self.fc1(x))
+        output_class = F.relu(self.fc2(output_class))
+        output_class = self.fc3(output_class)
+        #output_class = self.fc4(x)
 
         return output_class
 
@@ -134,10 +135,14 @@ class Trainer(object):
 
                 if it == 0:
                     results_class = res
+                    y_tot_class = y_class
                 else:
                     results_class = torch.cat((results_class, res))
+                    y_tot_class = torch.cat((y_tot_class, y_class))
                 #print(it)
             self.acc = acc_run/len(dataloader.dataset)
-            #print('acc =', self.acc)
+            self.f1 = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
+            print('acc =', self.acc)
+            print('f1 score =', self.f1)
 
         return results_class
