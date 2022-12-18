@@ -57,20 +57,27 @@ class Trainer(object):
         self.classification_criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr)
 
-    def train_all(self, dataloader_train, dataloader_val):
+    def train_all(self, dataloader_train, dataloader_val, dataloader_test=None):
         """
         Method to iterate over the epochs. In each epoch, it should call the functions
         "train_one_epoch" (using dataloader_train) and "eval" (using dataloader_val).
         """
+        if dataloader_test is None:
+            dataloader_test = dataloader_val
+
         for ep in range(self.epochs):
             self.train_one_epoch(dataloader_train)
             self.eval(dataloader_val)
+
 
             if (ep+1) % 50 == 0:
                 print("Reduce Learning rate")
                 for g in self.optimizer.param_groups:
                     g["lr"] = g["lr"]*0.8
 
+        self.eval(dataloader_train, mode="tr")
+        self.eval(dataloader_val)
+        self.eval(dataloader_test, mode="test")
 
     def train_one_epoch(self, dataloader):
         """
@@ -104,7 +111,7 @@ class Trainer(object):
             self.optimizer.zero_grad()  # YOUR CODE HERE
 
 
-    def eval(self, dataloader):
+    def eval(self, dataloader, mode="val"):
         """
             Method to evaluate model using the validation dataset OR the test dataset.
             Don't forget to set your model to eval mode!
@@ -140,8 +147,16 @@ class Trainer(object):
                     results_class = torch.cat((results_class, res))
                     y_tot_class = torch.cat((y_tot_class, y_class))
                 #print(it)
-            self.acc = acc_run/len(dataloader.dataset)
-            self.f1 = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
+            if mode == "val":
+                self.acc_val = acc_run/len(dataloader.dataset)
+                self.f1_val = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
+            if mode == "tr":
+                self.acc_tr = acc_run/len(dataloader.dataset)
+                self.f1_tr = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
+            if mode == "test":
+                self.acc_test = acc_run/len(dataloader.dataset)
+                self.f1_test = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
+
             #print('acc =', self.acc)
             #print('f1 score =', self.f1)
 
