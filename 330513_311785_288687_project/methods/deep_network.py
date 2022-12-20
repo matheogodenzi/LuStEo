@@ -5,13 +5,13 @@ from metrics import accuracy_fn, macrof1_fn
 import numpy as np
 
 ## MS2!!
-
+# optimal parameters found : lr = 1e-4, max-iters=500
 
 class SimpleNetwork(nn.Module):
     """
     A network which does classification!
     """
-    def __init__(self, input_size, num_classes, hidden_size=(120, 32)):
+    def __init__(self, input_size, num_classes, hidden_size=(300, 20)):
         super(SimpleNetwork, self).__init__()
 
         # defining characteristic parameters of the network
@@ -23,7 +23,7 @@ class SimpleNetwork(nn.Module):
         self.fc1 = nn.Linear(input_size, hidden_size[0])
         self.fc2 = nn.Linear(hidden_size[0], hidden_size[1])
         self.fc3 = nn.Linear(hidden_size[1], num_classes)
-
+        # self.fc4 = nn.Linear(hidden_size[2], num_classes)
     def forward(self, x):
         """
         Takes as input the data x and outputs the
@@ -33,9 +33,10 @@ class SimpleNetwork(nn.Module):
         Returns:
             output_class (torch.tensor): shape (N, C) (logits)
         """
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        output_class = self.fc3(x)
+        output_class = F.relu(self.fc1(x))
+        output_class = F.relu(self.fc2(output_class))
+        output_class = self.fc3(output_class)
+        #output_class = self.fc4(x)
 
         return output_class
 
@@ -56,20 +57,27 @@ class Trainer(object):
         self.classification_criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr)
 
-    def train_all(self, dataloader_train, dataloader_val):
+    def train_all(self, dataloader_train, dataloader_val, dataloader_test=None):
         """
         Method to iterate over the epochs. In each epoch, it should call the functions
         "train_one_epoch" (using dataloader_train) and "eval" (using dataloader_val).
         """
+        if dataloader_test is None:
+            dataloader_test = dataloader_val
+
         for ep in range(self.epochs):
             self.train_one_epoch(dataloader_train)
             self.eval(dataloader_val)
+
 
             if (ep+1) % 50 == 0:
                 print("Reduce Learning rate")
                 for g in self.optimizer.param_groups:
                     g["lr"] = g["lr"]*0.8
 
+        self.eval(dataloader_train, mode="tr")
+        self.eval(dataloader_val)
+        self.eval(dataloader_test, mode="test")
 
     def train_one_epoch(self, dataloader):
         """
@@ -103,7 +111,7 @@ class Trainer(object):
             self.optimizer.zero_grad()  # YOUR CODE HERE
 
 
-    def eval(self, dataloader):
+    def eval(self, dataloader, mode="val"):
         """
             Method to evaluate model using the validation dataset OR the test dataset.
             Don't forget to set your model to eval mode!
@@ -122,26 +130,34 @@ class Trainer(object):
             for it, batch in enumerate(dataloader):
                 # Get batch of data.
                 x, y, y_class = batch
-                #curr_bs = x.shape[0]
-                logits = self.model.forward(x)
+                curr_bs = x.shape[0]
+                res = torch.argmax(self.model(x),dim=1)
+                acc_run += accuracy_fn(res.numpy(),y_class.numpy())*curr_bs
+
+                # verifying shapes
+                #print(it)
+                #print('res', res)
+                #print('y_class', y_class)
+                #print('********')
+
                 if it == 0:
-                    results_class = np.argmax(logits, axis=1)
+                    results_class = res
+                    y_tot_class = y_class
                 else:
-                    results_class = torch.cat((results_class, np.argmax(logits, axis=1)))
+                    results_class = torch.cat((results_class, res))
+                    y_tot_class = torch.cat((y_tot_class, y_class))
+                #print(it)
+            if mode == "val":
+                self.acc_val = acc_run/len(dataloader.dataset)
+                self.f1_val = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
+            if mode == "tr":
+                self.acc_tr = acc_run/len(dataloader.dataset)
+                self.f1_tr = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
+            if mode == "test":
+                self.acc_test = acc_run/len(dataloader.dataset)
+                self.f1_test = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
 
-            '''
-            # testing dimensions
-            #logits = self.model.forward(x)
-            #print(f'logits shape : {np.argmax(logits, axis=1)}')
-            print(f'y_class = {y_class}')
-            print(f'results_class = {results_class}')
-
-            #curr_bs = x.shape[0]
-            acc_run += accuracy_fn(results_class, y_class) * curr_bs
-            acc = acc_run / len(dataloader.dataset)
-            '''
-
-            #print(', accuracy test: {:.2f}'.format(acc))
-            #print(it, results_class)
+            #print('acc =', self.acc)
+            #print('f1 score =', self.f1)
 
         return results_class
