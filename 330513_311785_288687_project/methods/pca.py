@@ -56,7 +56,7 @@ class PCA(object):
         
         # Create the covariance matrix
         C = 1/X_tilde.shape[0]*(X_tilde.T@X_tilde)
-
+        test = "test"
         # Compute the eigenvectors and eigenvalues. 
         eigvals, eigvecs = np.linalg.eigh(C)
         
