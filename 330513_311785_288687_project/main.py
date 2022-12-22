@@ -130,7 +130,7 @@ def main(args):
 
         elif args.method_name == "knn":
             method_obj = KNN(k=args.knn_neighbours)
-            search_arg_vals = [6]
+            search_arg_vals = [6,3,4,1] #6 best with best accuracy 0.940566769143822
             search_arg_name = "knn_neighbours"
 
 

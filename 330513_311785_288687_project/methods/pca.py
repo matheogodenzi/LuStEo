@@ -48,19 +48,36 @@ class PCA(object):
         #### YOUR CODE HERE!
         ###
         ##
+        # Compute the mean of data
+        self.mean = np.mean(training_data, 0)
+        # Center the data with the mean
+        X_tilde = training_data - self.mean
 
-        '''
-        self.mean = np.mean(training_data)
-        #mean de toute la data ou par vecteur?
-        # si mean par vecteurs: self.mean = np.mean(training_data, axis=1)
-        C = 1/shape(training_data[0] * np.sum((training_data-self.mean)*(training_data-self.mean).T)
-        self.W =
-        exvar = self.W.T@C@self.W
+        
+        # Create the covariance matrix
+        C = 1/X_tilde.shape[0]*(X_tilde.T@X_tilde)
+
+        # Compute the eigenvectors and eigenvalues. 
+        eigvals, eigvecs = np.linalg.eigh(C)
+        
+        # Choose the top d eigenvalues and corresponding eigenvectors. Sort the eigenvalues( with corresponding eigenvectors )
+        # in decreasing order first.
+        eigvals = np.flip(eigvals)
+        eigvecs = np.flip(eigvecs, 1)
+        
+        # Create matrix W and the corresponding eigen values
+        self.W = eigvecs[:self.d].T
+        
+        eg = eigvals[:self.d]
+
+        
+        
+        # Compute the explained variance
+        exvar = np.sum(eg)/np.sum(eigvals)*100
 
         return exvar
-        '''
-        pass
 
+        
     def reduce_dimension(self, data):
         """
             Reduce the dimensions of the data, using the previously computed
@@ -76,6 +93,7 @@ class PCA(object):
         #### YOUR CODE HERE!
         ###
         ##
-        data_reduced = self.W.T @ (data - self.mean)
+        X_tilde_data = data - self.mean
+        data_reduced = X_tilde_data@self.W
 
         return data_reduced
