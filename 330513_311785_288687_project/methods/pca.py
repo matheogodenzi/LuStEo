@@ -66,7 +66,7 @@ class PCA(object):
         eigvecs = np.flip(eigvecs, 1)
         
         # Create matrix W and the corresponding eigen values
-        self.W = eigvecs[:self.d].T
+        self.W = eigvecs[:,:self.d]
         
         eg = eigvals[:self.d]
 
