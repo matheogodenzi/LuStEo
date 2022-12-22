@@ -173,7 +173,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_cross_validation', action="store_true", help="to enable cross validation")
 
     # Feel free to add more arguments here if you need
-    parser.add_argument('--hidden_layers', default=(100, 10), help="sets the number of hidden neurons in the deep network on both layers")
+    parser.add_argument('--hidden_layers', default=(300, 80), help="sets the number of hidden neurons in the deep network on both layers")
 
     # MS2 arguments
     parser.add_argument('--use_pca', action="store_true", help="to enable PCA")
