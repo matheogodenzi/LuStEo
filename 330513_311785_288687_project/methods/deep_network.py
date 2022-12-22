@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from metrics import accuracy_fn, macrof1_fn
 import numpy as np
+import pandas as pd
+import csv
 
 ## MS2!!
 # optimal parameters found : lr = 1e-4, max-iters=500
@@ -53,6 +55,12 @@ class Trainer(object):
         self.epochs = epochs
         self.model= model
         self.beta = beta
+        self.acc_val = []
+        self.f1_val = []
+        self.acc_tr = []
+        self.f1_tr = []
+        self.acc_test = []
+        self.f1_test = []
 
         self.classification_criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr)
@@ -67,17 +75,37 @@ class Trainer(object):
 
         for ep in range(self.epochs):
             self.train_one_epoch(dataloader_train)
+            self.eval(dataloader_train, mode="tr")
             self.eval(dataloader_val)
-
+            self.eval(dataloader_test, mode="test")
 
             if (ep+1) % 50 == 0:
                 print("Reduce Learning rate")
                 for g in self.optimizer.param_groups:
                     g["lr"] = g["lr"]*0.8
 
-        self.eval(dataloader_train, mode="tr")
-        self.eval(dataloader_val)
-        self.eval(dataloader_test, mode="test")
+        #self.eval(dataloader_train, mode="tr")
+        #self.eval(dataloader_val)
+        #self.eval(dataloader_test, mode="test")
+
+        rows = zip(self.acc_tr, self.f1_tr, self.acc_val, self.f1_val, self.acc_test, self.f1_test)
+        with open("deep_network_metrics.txt", "w") as f:
+            writer = csv.writer(f)
+            for row in rows:
+                writer.writerow(row)
+
+        # storing accuracies and f1 scores evolutions for the training, validation and test datasets.
+        #train = [['traing_acc', 'training_f1', 'validation_acc', 'validation_f1', 'test_acc', 'test_f1'],
+                #[self.acc_tr, self.f1_tr, self.acc_val, self.f1_val, self.acc_test, self.f1_test]]
+        #val = [['validation_acc', 'validation_f1'],
+                #[self.acc_val, self.f1_val]]
+        #test = [['test_acc', 'test_f1'],
+                #[self.acc_test, self.f1_test]]
+
+        #np.savetxt("deep_network_metrics.csv",
+           #train,
+           #delimiter =", ",
+           #fmt ='% s')
 
     def train_one_epoch(self, dataloader):
         """
@@ -148,14 +176,14 @@ class Trainer(object):
                     y_tot_class = torch.cat((y_tot_class, y_class))
                 #print(it)
             if mode == "val":
-                self.acc_val = acc_run/len(dataloader.dataset)
-                self.f1_val = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
+                self.acc_val.append(acc_run/len(dataloader.dataset))
+                self.f1_val.append(macrof1_fn(results_class.numpy(), y_tot_class.numpy()))
             if mode == "tr":
-                self.acc_tr = acc_run/len(dataloader.dataset)
-                self.f1_tr = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
+                self.acc_tr.append(acc_run/len(dataloader.dataset))
+                self.f1_tr.append(macrof1_fn(results_class.numpy(), y_tot_class.numpy()))
             if mode == "test":
-                self.acc_test = acc_run/len(dataloader.dataset)
-                self.f1_test = macrof1_fn(results_class.numpy(), y_tot_class.numpy())
+                self.acc_test.append(acc_run/len(dataloader.dataset))
+                self.f1_test.append(macrof1_fn(results_class.numpy(), y_tot_class.numpy()))
 
             #print('acc =', self.acc)
             #print('f1 score =', self.f1)
