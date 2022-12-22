@@ -50,7 +50,7 @@ def main(args):
     # Dimensionality reduction (MS2)
     if args.use_pca:
         print("Using PCA")
-        pca_obj = PCA(d = 200)
+        pca_obj = PCA(d = 20)
         pca_obj.find_principal_components(train_data)
         train_data = pca_obj.reduce_dimension(train_data)
         #train_regression_target = pca_obj.reduce_dimension(train_regression_target)
