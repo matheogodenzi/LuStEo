@@ -53,9 +53,9 @@ def main(args):
         pca_obj = PCA(d = 200)
         pca_obj.find_principal_components(train_data)
         train_data = pca_obj.reduce_dimension(train_data)
-        train_regression_target = pca_obj.reduce_dimension(train_regression_target)
+        #train_regression_target = pca_obj.reduce_dimension(train_regression_target)
         test_data = pca_obj.reduce_dimension(test_data)
-        test_regression_target = pca_obj.reduce_dimension(test_regression_target)
+        #test_regression_target = pca_obj.reduce_dimension(test_regression_target)
 
     # Neural network. (This part is only relevant for MS2.)
     if args.method_name == "nn":
