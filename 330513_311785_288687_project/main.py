@@ -22,6 +22,9 @@ def main(args):
     if args.dataset=="h36m":
         train_dataset = H36M_Dataset(split="train", path_to_data=args.path_to_data)
         test_dataset = H36M_Dataset(split="test", path_to_data=args.path_to_data, means=train_dataset.means, stds=train_dataset.stds)
+
+        ''' contest test dataset'''
+        # test_dataset = H36M_Dataset(split="test2", path_to_data=args.path_to_data, means=train_dataset.means, stds=train_dataset.stds)
         #uncomment for MS2
         val_dataset = H36M_Dataset(split="val",path_to_data=args.path_to_data, means=train_dataset.means, stds=train_dataset.stds)
 
@@ -53,9 +56,9 @@ def main(args):
         pca_obj = PCA(d = 200)
         pca_obj.find_principal_components(train_data)
         train_data = pca_obj.reduce_dimension(train_data)
-        train_regression_target = pca_obj.reduce_dimension(train_regression_target)
+        #train_regression_target = pca_obj.reduce_dimension(train_regression_target)
         test_data = pca_obj.reduce_dimension(test_data)
-        test_regression_target = pca_obj.reduce_dimension(test_regression_target)
+        #test_regression_target = pca_obj.reduce_dimension(test_regression_target)
 
     # Neural network. (This part is only relevant for MS2.)
     if args.method_name == "nn":
@@ -80,11 +83,15 @@ def main(args):
         trainer = Trainer(model, lr=args.lr, epochs=args.max_iters)
         trainer.train_all(train_dataloader, val_dataloader, test_dataloader)
         results_class = trainer.eval(test_dataloader)
+        print('shape = ',results_class.shape)
+        '''printing accuracies'''
         #print(f'final validation accuracy {trainer.acc_val}')
         #print(f'final validation f1 score {trainer.f1_val}')
         #print(results_class.size())
-        torch.save(results_class, "results_class.txt")
+
+        #torch.save(results_class, "results_class.txt")
         np.savetxt('results.txt', results_class)
+        np.save("results_class", results_class.numpy())
 
     # classical ML methods (MS1 and MS2)
     # we first create the classification/regression objects
@@ -173,7 +180,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_cross_validation', action="store_true", help="to enable cross validation")
 
     # Feel free to add more arguments here if you need
-    parser.add_argument('--hidden_layers', default=(300, 50), help="sets the number of hidden neurons in the deep network on both layers")
+    parser.add_argument('--hidden_layers', default=(52, 42, 32, 22), help="sets the number of hidden neurons in the deep network on both layers")
 
     # MS2 arguments
     parser.add_argument('--use_pca', action="store_true", help="to enable PCA")

@@ -13,7 +13,7 @@ class SimpleNetwork(nn.Module):
     """
     A network which does classification!
     """
-    def __init__(self, input_size, num_classes, hidden_size=(300, 20)):
+    def __init__(self, input_size, num_classes, hidden_size=(32, 32, 32, 32)):
         super(SimpleNetwork, self).__init__()
 
         # defining characteristic parameters of the network
@@ -22,10 +22,12 @@ class SimpleNetwork(nn.Module):
         self.hidden_size = hidden_size
 
         # defining layers transitions
-        self.fc1 = nn.Linear(input_size, hidden_size[0])
-        self.fc2 = nn.Linear(hidden_size[0], hidden_size[1])
-        self.fc3 = nn.Linear(hidden_size[1], num_classes)
-        # self.fc4 = nn.Linear(hidden_size[2], num_classes)
+        self.fc1 = nn.Linear(input_size, hidden_size[0], bias=True)
+        self.fc2 = nn.Linear(hidden_size[0], hidden_size[1], bias=True)
+        self.fc3 = nn.Linear(hidden_size[1], hidden_size[2], bias=True)
+        self.fc4 = nn.Linear(hidden_size[2], hidden_size[3], bias=True)
+        self.fc5 = nn.Linear(hidden_size[3], num_classes, bias=True)
+
     def forward(self, x):
         """
         Takes as input the data x and outputs the
@@ -37,8 +39,9 @@ class SimpleNetwork(nn.Module):
         """
         output_class = F.relu(self.fc1(x))
         output_class = F.relu(self.fc2(output_class))
-        output_class = self.fc3(output_class)
-        #output_class = self.fc4(x)
+        output_class = F.relu(self.fc3(output_class))
+        output_class = F.relu(self.fc4(output_class))
+        output_class = F.relu(self.fc5(output_class))
 
         return output_class
 
@@ -55,6 +58,8 @@ class Trainer(object):
         self.epochs = epochs
         self.model= model
         self.beta = beta
+
+        # metrics of interest
         self.acc_val = []
         self.f1_val = []
         self.acc_tr = []
@@ -93,19 +98,6 @@ class Trainer(object):
             writer = csv.writer(f)
             for row in rows:
                 writer.writerow(row)
-
-        # storing accuracies and f1 scores evolutions for the training, validation and test datasets.
-        #train = [['traing_acc', 'training_f1', 'validation_acc', 'validation_f1', 'test_acc', 'test_f1'],
-                #[self.acc_tr, self.f1_tr, self.acc_val, self.f1_val, self.acc_test, self.f1_test]]
-        #val = [['validation_acc', 'validation_f1'],
-                #[self.acc_val, self.f1_val]]
-        #test = [['test_acc', 'test_f1'],
-                #[self.acc_test, self.f1_test]]
-
-        #np.savetxt("deep_network_metrics.csv",
-           #train,
-           #delimiter =", ",
-           #fmt ='% s')
 
     def train_one_epoch(self, dataloader):
         """

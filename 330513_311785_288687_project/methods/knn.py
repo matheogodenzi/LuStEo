@@ -88,8 +88,6 @@ class KNN(object):
             Returns:
                 pred_labels (np.array): labels of shape (N,)
         """
-        print("test")
-        print(type(training_data))
         self.training_data = training_data
         self.training_labels = training_labels
 
